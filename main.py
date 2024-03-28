@@ -3,7 +3,7 @@ import random
 
 # constants
 WIDTH, HEIGHT = 800, 800
-DIM = 10
+DIM = 20
 
 RULES = [
     [
