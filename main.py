@@ -1,5 +1,6 @@
 import pygame
 import random
+from tile import Tile
 
 # constants
 WIDTH, HEIGHT = 800, 800
@@ -44,7 +45,11 @@ def load_image(path, dim, padding=0):
     return img
 
 def preload():
-    pass
+    tile_images = []
+    path = "./tiles/tetris"
+    tile_images.append(load_image(f"{path}/blank.png", DIM))
+    tile_images.append(load_image(f"{path}/up.png", DIM))
+    return tile_images
 
 def check_valid(arr, valid):
     # VALID: [BLANK, RIGHT]
@@ -58,11 +63,11 @@ def check_valid(arr, valid):
         i -= 1
 
 def draw(screen, tiles, grid):
-    screen.blit(tiles[0], (0, 0))
-    screen.blit(tiles[1], (50, 0))
-    screen.blit(tiles[2], (100, 0))
-    screen.blit(tiles[3], (150, 0))
-    screen.blit(tiles[4], (0, 50))
+    screen.blit(tiles[0].img, (0, 0))
+    screen.blit(tiles[1].img, (50, 0))
+    screen.blit(tiles[2].img, (100, 0))
+    screen.blit(tiles[3].img, (150, 0))
+    screen.blit(tiles[4].img, (0, 50))
 
     w = WIDTH / DIM
     h = HEIGHT / DIM
@@ -72,7 +77,7 @@ def draw(screen, tiles, grid):
             cell = grid[i + j * DIM]
             if cell['collapsed']:
                 index = cell['options'][0]
-                img = tiles[index]
+                img = tiles[index].img
                 scaled_img = pygame.transform.scale(img, (w, h)) # scale the img
                 screen.blit(scaled_img, (i * w, j * h))
             else:
@@ -153,15 +158,15 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
-    preload()
+    tile_images = preload()
 
     tiles = []
-
-    tiles.append(load_image("./tiles/test/0.png", DIM))
-    tiles.append(load_image("./tiles/test/1.png", DIM))
-    tiles.append(load_image("./tiles/test/2.png", DIM))
-    tiles.append(load_image("./tiles/test/3.png", DIM))
-    tiles.append(load_image("./tiles/test/4.png", DIM))
+    tiles.append(Tile(tile_images[0], [0, 0, 0 ,0]))
+    tiles.append(Tile(tile_images[1], [1, 1, 0 ,1]))
+    tiles.append(tiles[1].rotate(1))
+    tiles.append(tiles[1].rotate(2))
+    tiles.append(tiles[1].rotate(3))
+                 
 
     grid = [{
         'collapsed': False,
