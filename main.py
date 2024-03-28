@@ -5,6 +5,39 @@ import random
 WIDTH, HEIGHT = 800, 800
 DIM = 10
 
+RULES = [
+    [
+        [0, 1],
+        [0, 2],
+        [0, 3],
+        [0, 4]
+    ],
+    [
+        [2, 4, 3],
+        [4, 1, 3],
+        [0, 4],
+        [2, 4, 1]
+    ],
+    [
+        [2, 4, 3],
+        [4, 1, 3],
+        [2, 4, 1],
+        [0, 4]
+    ],
+    [
+        [0, 4],
+        [4, 1, 3],
+        [2, 4, 1],
+        [2, 1, 3]
+    ],
+    [
+        [2, 4, 3],
+        [0, 2],
+        [2, 4, 1],
+        [1, 3, 2]
+    ]
+]
+
 def load_image(path, dim, padding=0):
     img = pygame.image.load(path).convert_alpha()
     img = pygame.transform.scale(img, (dim - padding, dim - padding))
@@ -12,6 +45,17 @@ def load_image(path, dim, padding=0):
 
 def preload():
     pass
+
+def check_valid(arr, valid):
+    # VALID: [BLANK, RIGHT]
+    # ARR: [BLANK, UP, RIGHT, DOWN, LEFT]
+    # result in removing UP, DOWN, LEFT
+    i = len(arr) - 1
+    while i >= 0:
+        element = arr[i]
+        if element not in valid:
+            arr.pop(i)
+        i -= 1
 
 def draw(screen, tiles, grid):
     screen.blit(tiles[0], (0, 0))
@@ -60,6 +104,49 @@ def draw(screen, tiles, grid):
 
     print(grid)
     print(grid_copy)
+
+    next_grid = []
+    for j in range(DIM):
+        for i in range(DIM):
+            index = i + j * DIM
+            if grid[index]['collapsed']:
+                next_grid.append(grid[index])
+            else:
+                options = list(range(len(tiles)))  # List of options
+                # Look up
+                if j > 0:
+                    up = grid[i + (j - 1) * DIM]
+                    valid_options = []
+                    for option in up['options']:
+                        valid_options.extend(RULES[3])
+                    check_valid(options, valid_options)
+                # Look right
+                if i < DIM - 1:
+                    right = grid[i + 1 + j * DIM]
+                    valid_options = []
+                    for option in right['options']:
+                        valid_options.extend(RULES[4])
+                    check_valid(options, valid_options)
+                # Look down
+                if j < DIM - 1:
+                    down = grid[i + (j + 1) * DIM]
+                    valid_options = []
+                    for option in down['options']:
+                        valid_options.extend(RULES[1])
+                    check_valid(options, valid_options)
+                # Look left
+                if i > 0:
+                    left = grid[i - 1 + j * DIM]
+                    valid_options = []
+                    for option in left['options']:
+                        valid_options.extend(RULES[2])
+                    check_valid(options, valid_options)
+
+                next_grid.append({
+                    'collapsed': True,
+                    'options': options
+                })
+    grid = next_grid
 
 def main():
     pygame.init()
