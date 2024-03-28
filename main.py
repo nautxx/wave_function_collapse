@@ -1,8 +1,9 @@
 import pygame
+import random
 
 # constants
 WIDTH, HEIGHT = 800, 800
-DIM = 2
+DIM = 10
 
 def load_image(path, dim, padding=0):
     img = pygame.image.load(path).convert_alpha()
@@ -39,8 +40,23 @@ def draw(screen, tiles, grid):
     if not grid_copy:
         return  # If there are no cells with options, exit the function
 
-    # grid_copy sorted based on the length of options
     grid_copy.sort(key=lambda cell: len(cell['options']))
+
+    # Find the stop index
+    len_options = len(grid_copy[0]['options'])
+    stop_index = next((i for i, cell in enumerate(grid_copy) if len(cell['options']) > len_options), 0)
+
+    if stop_index > 0:
+        grid_copy = grid_copy[:stop_index]
+
+    if grid_copy:
+        cell = random.choice(grid_copy)
+        cell['collapsed'] = True
+        pick = random.choice(cell['options'])
+        if pick is None:
+            start_over()
+            return
+        cell['options'] = [pick]
 
     print(grid)
     print(grid_copy)
