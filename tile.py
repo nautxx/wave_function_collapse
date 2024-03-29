@@ -20,7 +20,7 @@ class Tile:
 
     def rotate(self, num):
         """Rotate a tile and its edges to create a new one"""
-        
+
         w, h = self.img.get_width(), self.img.get_height(),
         new_img = pygame.Surface((w, h), pygame.SRCALPHA)
         new_img.blit(self.img, (0, 0))
@@ -41,7 +41,6 @@ class Tile:
             # tile 5 can't match itself
             if (tile.index == 5 and self.index == 5):
                 continue
-
             # up
             if compare_edge(tile.edges[2], self.edges[0]):
                 self.up.append(tile)
