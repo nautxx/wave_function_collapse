@@ -5,12 +5,11 @@ from cell import Cell
 
 # constants
 WIDTH, HEIGHT = 800, 800
-DIM = 40
+DIM = 8
 grid = []
 
-def load_image(path, dim, padding=0):
+def load_image(path):
     img = pygame.image.load(path).convert_alpha()
-    img = pygame.transform.scale(img, (dim - padding, dim - padding))
     return img
 
 def preload():
@@ -20,7 +19,7 @@ def preload():
     # images.append(load_image(f"{path}/up.png", DIM))
     path = "./tiles/circuit_coding_train"
     for i in range(13):
-        images.append(load_image(f"{path}/{i}.png", DIM))
+        images.append(load_image(f"{path}/{i}.png"))
     return images
 
 def check_valid(arr, valid):
@@ -38,6 +37,13 @@ def make_grid(tiles):
     # Create cell for each spot on the grid
     for i in range(DIM * DIM):
         grid.append(Cell(len(tiles)))
+
+def remove_duplicated_tiles(tiles):
+    unique_tiles_map = {}
+    for tile in tiles:
+        key = ','.join(tile.edges)  # ex: "ABB,BCB,BBA,AAA"
+        unique_tiles_map[key] = tile
+    return list(unique_tiles_map.values())
 
 def draw(screen, tiles, grid):
     w = WIDTH / DIM
@@ -129,32 +135,32 @@ def main():
     tile_images = preload()
 
     tiles = []
-    tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA']))
-    tiles.append(Tile(tile_images[1], ['BBB', 'BBB', 'BBB', 'BBB']))
-    tiles.append(Tile(tile_images[2], ['BBB', 'BCB', 'BBB', 'BBB']))
-    tiles.append(Tile(tile_images[3], ['BBB', 'BDB', 'BBB', 'BDB']))
-    tiles.append(Tile(tile_images[4], ['ABB', 'BCB', 'BBA', 'AAA']))
-    tiles.append(Tile(tile_images[5], ['ABB', 'BBB', 'BBB', 'BBA']))
-    tiles.append(Tile(tile_images[6], ['BBB', 'BCB', 'BBB', 'BCB']))
-    tiles.append(Tile(tile_images[7], ['BDB', 'BCB', 'BDB', 'BCB']))
-    tiles.append(Tile(tile_images[8], ['BDB', 'BBB', 'BCB', 'BBB']))
-    tiles.append(Tile(tile_images[9], ['BCB', 'BCB', 'BBB', 'BCB']))
-    tiles.append(Tile(tile_images[10], ['BCB', 'BCB', 'BCB', 'BCB']))
-    tiles.append(Tile(tile_images[11], ['BCB', 'BCB', 'BBB', 'BBB']))
-    tiles.append(Tile(tile_images[12], ['BBB', 'BCB', 'BBB', 'BCB']))
+    tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA'], 0))
+    tiles.append(Tile(tile_images[1], ['BBB', 'BBB', 'BBB', 'BBB'], 1))
+    tiles.append(Tile(tile_images[2], ['BBB', 'BCB', 'BBB', 'BBB'], 2))
+    tiles.append(Tile(tile_images[3], ['BBB', 'BDB', 'BBB', 'BDB'], 3))
+    tiles.append(Tile(tile_images[4], ['ABB', 'BCB', 'BBA', 'AAA'], 4))
+    tiles.append(Tile(tile_images[5], ['ABB', 'BBB', 'BBB', 'BBA'], 5))
+    tiles.append(Tile(tile_images[6], ['BBB', 'BCB', 'BBB', 'BCB'], 6))
+    tiles.append(Tile(tile_images[7], ['BDB', 'BCB', 'BDB', 'BCB'], 7))
+    tiles.append(Tile(tile_images[8], ['BDB', 'BBB', 'BCB', 'BBB'], 8))
+    tiles.append(Tile(tile_images[9], ['BCB', 'BCB', 'BBB', 'BCB'], 9))
+    tiles.append(Tile(tile_images[10], ['BCB', 'BCB', 'BCB', 'BCB'], 10))
+    tiles.append(Tile(tile_images[11], ['BCB', 'BCB', 'BBB', 'BBB'], 11))
+    tiles.append(Tile(tile_images[12], ['BBB', 'BCB', 'BBB', 'BCB'], 12))
 
     # tiles.append(tiles[1].rotate(1))
     # tiles.append(tiles[1].rotate(2))
     # tiles.append(tiles[1].rotate(3))
 
-    # initial_tile_count = len(tiles)
-    # for i in range(initial_tile_count):
-    #     temp_tiles = []
-    #     for j in range(4):
-    #         temp_tiles.append(tiles[i].rotate(j))
-    #     temp_tiles = remove_duplicated_tiles(temp_tiles)  # Assuming this function is defined elsewhere
-    #     tiles.extend(temp_tiles)
-    # print(len(tiles))
+    initial_tile_count = len(tiles)
+    for i in range(initial_tile_count):
+        temp_tiles = []
+        for j in range(4):
+            temp_tiles.append(tiles[i].rotate(j))
+        temp_tiles = remove_duplicated_tiles(temp_tiles)  # Assuming this function is defined elsewhere
+        tiles.extend(temp_tiles)
+    print(len(tiles))
 
     # Generate the adjacency rules based on edges
     for i in range(len(tiles)):
