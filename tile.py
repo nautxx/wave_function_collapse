@@ -1,5 +1,11 @@
 import pygame
 
+def reverse_string(s):
+    return s[::-1]
+
+def compare_edge(a, b):
+    return a == reverse_string(b)
+
 class Tile:
     def __init__(self, img, edges):
         self.img = img
@@ -27,14 +33,14 @@ class Tile:
             tile = tiles[i]
 
             # UP
-            if tile.edges[2] == self.edges[0]:
+            if compare_edge(tile.edges[2], self.edges[0]):
                 self.up.append(tile)
             # RIGHT
-            if tile.edges[3] == self.edges[1]:
+            if compare_edge(tile.edges[3], self.edges[1]):
                 self.right.append(tile)
             # DOWN
-            if tile.edges[0] == self.edges[2]:
+            if compare_edge(tile.edges[0], self.edges[2]):
                 self.down.append(tile)
             # LEFT
-            if tile.edges[1] == self.edges[3]:
+            if compare_edge(tile.edges[1], self.edges[3]):
                 self.left.append(tile)
