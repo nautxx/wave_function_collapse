@@ -7,89 +7,6 @@ from cell import Cell
 WIDTH, HEIGHT = 800, 800
 DIM = 20
 
-class Cell:
-    def __init__(self, value):
-        self.collapsed = False
-        
-        if isinstance(value, list):
-            self.options = value
-        else:
-            self.options = list(range(value))
-
-import pygame
-
-class Tile:
-    def __init__(self, img, edges):
-        self.img = img
-        self.edges = edges
-        self.up = []
-        self.right = []
-        self.down = []
-        self.left = []
-
-    def rotate(self, num):
-        w, h = self.img.get_size()
-        new_img = pygame.Surface((w, h), pygame.SRCALPHA)
-        new_img.blit(self.img, (0, 0))
-        new_img = pygame.transform.rotate(new_img, -90 * num)
-
-        new_edges = []
-        length = len(self.edges)
-        for i in range(length):
-            new_edges.append(self.edges[(i - num + length) % length])
-
-        return Tile(new_img, new_edges)
-    
-    def analyze(self, tiles):
-        for i in range(len(tiles)):
-            tile = tiles[i]
-
-            # UP
-            if tile.edges[2] == self.edges[0]:
-                self.up.append(tile)
-            # RIGHT
-            if tile.edges[3] == self.edges[1]:
-                self.right.append(tile)
-            # DOWN
-            if tile.edges[0] == self.edges[2]:
-                self.down.append(tile)
-            # LEFT
-            if tile.edges[1] == self.edges[3]:
-                self.left.append(tile)
-
-RULES = [
-    [
-        [0, 1],
-        [0, 2],
-        [0, 3],
-        [0, 4]
-    ],
-    [
-        [2, 4, 3],
-        [4, 1, 3],
-        [0, 4],
-        [2, 4, 1]
-    ],
-    [
-        [2, 4, 3],
-        [4, 1, 3],
-        [2, 4, 1],
-        [0, 4]
-    ],
-    [
-        [0, 4],
-        [4, 1, 3],
-        [2, 4, 1],
-        [2, 1, 3]
-    ],
-    [
-        [2, 4, 3],
-        [0, 2],
-        [2, 4, 1],
-        [1, 3, 2]
-    ]
-]
-
 def load_image(path, dim, padding=0):
     img = pygame.image.load(path).convert_alpha()
     img = pygame.transform.scale(img, (dim - padding, dim - padding))
@@ -174,28 +91,28 @@ def draw(screen, tiles, grid):
                     up = grid[i + (j - 1) * DIM]
                     valid_options = []
                     for option in up.options:
-                        valid_options.extend(RULES[3])
+                        valid_options.extend(tiles[option].down)
                     check_valid(options, valid_options)
                 # Look right
                 if i < DIM - 1:
                     right = grid[i + 1 + j * DIM]
                     valid_options = []
                     for option in right.options:
-                        valid_options.extend(RULES[4])
+                        valid_options.extend(tiles[option].left)
                     check_valid(options, valid_options)
                 # Look down
                 if j < DIM - 1:
                     down = grid[i + (j + 1) * DIM]
                     valid_options = []
                     for option in down.options:
-                        valid_options.extend(RULES[1])
+                        valid_options.extend(tiles[option].up)
                     check_valid(options, valid_options)
                 # Look left
                 if i > 0:
                     left = grid[i - 1 + j * DIM]
                     valid_options = []
                     for option in left.options:
-                        valid_options.extend(RULES[2])
+                        valid_options.extend(tiles[option].right)
                     check_valid(options, valid_options)
 
                 next_grid.append({
