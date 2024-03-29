@@ -115,10 +115,7 @@ def draw(screen, tiles, grid):
                         valid_options.extend(tiles[option].right)
                     check_valid(options, valid_options)
 
-                next_grid.append({
-                    'collapsed': True,
-                    'options': options
-                })
+                next_grid.append(Cell(options))
     grid = next_grid
 
 def main():
