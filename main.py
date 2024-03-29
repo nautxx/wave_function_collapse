@@ -6,9 +6,11 @@ from cell import Cell
 # constants
 WIDTH, HEIGHT = 800, 800
 DIM = 10
-grid = []
+
 tiles = []
 tile_images = []
+
+grid = []
 
 def load_image(path):
     img = pygame.image.load(path).convert_alpha()
@@ -56,23 +58,30 @@ def draw(screen, tiles, grid):
                 scaled_img = pygame.transform.scale(img, (w, h)) # scale the img
                 screen.blit(scaled_img, (i * w, j * h))
             else:
-                pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(i * w, j * h, w, h), 1)
+                pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(i * w, j * h, w, h), 1)
 
-    # make a copy of the grid
+    # make a copy of the grid and removed any collapsed cells
     grid_copy = [cell for cell in grid if not cell.collapsed]
 
-    if not grid_copy:
-        return  # If there are no cells with options, exit the function
+    # algorithm has completed if everything is collapsed
+    if len(grid_copy) == 0:
+        return
 
+    # pick a cell with least entropy
+    # sort by entropy
     grid_copy.sort(key=lambda cell: len(cell.options))
 
-    # Find the stop index
-    len_options = len(grid_copy[0].options)
-    stop_index = next((i for i, cell in enumerate(grid_copy) if len(cell.options) > len_options), 0)
-
+    # keep only the lowest entropy cells
+    length = len(grid_copy[0].options)
+    stop_index = 0
+    for i in range(1, len(grid_copy)):
+        if len(grid_copy[i].options) > length:
+            stop_index = i
+            break
     if stop_index > 0:
         grid_copy = grid_copy[:stop_index]
 
+    # collapse a cell
     if grid_copy:
         cell = random.choice(grid_copy)
         cell.collapsed = True
@@ -85,6 +94,7 @@ def draw(screen, tiles, grid):
     # print(grid)
     # print(grid_copy)
 
+    # calculate entropy
     next_grid = []
     for j in range(DIM):
         for i in range(DIM):
@@ -98,28 +108,32 @@ def draw(screen, tiles, grid):
                     up = grid[i + (j - 1) * DIM]
                     valid_options = []
                     for option in up.options:
-                        valid_options.extend(tiles[option].down)
+                        valid = tiles[option].down
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
                 # Look right
                 if i < DIM - 1:
                     right = grid[i + 1 + j * DIM]
                     valid_options = []
                     for option in right.options:
-                        valid_options.extend(tiles[option].left)
+                        valid = tiles[option].left
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
                 # Look down
                 if j < DIM - 1:
                     down = grid[i + (j + 1) * DIM]
                     valid_options = []
                     for option in down.options:
-                        valid_options.extend(tiles[option].up)
+                        valid = tiles[option].up
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
                 # Look left
                 if i > 0:
                     left = grid[i - 1 + j * DIM]
                     valid_options = []
                     for option in left.options:
-                        valid_options.extend(tiles[option].right)
+                        valid = tiles[option].right
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
 
                 next_grid.append(Cell(options))
@@ -157,7 +171,7 @@ def main():
             temp_tiles.append(tiles[i].rotate(j))
         temp_tiles = remove_duplicated_tiles(temp_tiles)  # Assuming this function is defined elsewhere
         tiles.extend(temp_tiles)
-    print(f"Amount of tiles: {len(tiles)}")
+    print(f"Total tiles: {len(tiles)}")
 
     # generate the adjacency rules based on edges
     for i in range(len(tiles)):
@@ -174,7 +188,7 @@ def main():
                 loop = False
 
         # default background color
-        screen.fill((255, 255, 255))
+        screen.fill((0, 0, 0))
 
         # draw elements on the screen
         draw(screen, tiles, grid)
