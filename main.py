@@ -5,7 +5,8 @@ from cell import Cell
 
 # constants
 WIDTH, HEIGHT = 800, 800
-DIM = 20
+DIM = 40
+grid = []
 
 def load_image(path, dim, padding=0):
     img = pygame.image.load(path).convert_alpha()
@@ -33,13 +34,12 @@ def check_valid(arr, valid):
             arr.pop(i)
         i -= 1
 
-def draw(screen, tiles, grid):
-    screen.blit(tiles[0].img, (0, 0))
-    screen.blit(tiles[1].img, (50, 0))
-    screen.blit(tiles[2].img, (100, 0))
-    screen.blit(tiles[3].img, (150, 0))
-    screen.blit(tiles[4].img, (0, 50))
+def make_grid(tiles):
+    # Create cell for each spot on the grid
+    for i in range(DIM * DIM):
+        grid.append(Cell(len(tiles)))
 
+def draw(screen, tiles, grid):
     w = WIDTH / DIM
     h = HEIGHT / DIM
 
@@ -73,13 +73,13 @@ def draw(screen, tiles, grid):
         cell = random.choice(grid_copy)
         cell.collapsed = True
         pick = random.choice(cell.options)
-        if pick is None:
-            start_over()
+        if pick == None:
+            make_grid(tiles)
             return
         cell.options = [pick]
 
-    print(grid)
-    print(grid_copy)
+    # print(grid)
+    # print(grid_copy)
 
     next_grid = []
     for j in range(DIM):
@@ -129,17 +129,19 @@ def main():
     tile_images = preload()
 
     tiles = []
-    tiles.append(Tile(tile_images[0], [0, 0, 0, 0]))
-    tiles.append(Tile(tile_images[1], [1, 1, 1, 1]))
-    tiles.append(Tile(tile_images[2], [1, 2, 1, 1]))
-    tiles.append(Tile(tile_images[3], [1, 3, 1, 3]))
-    tiles.append(Tile(tile_images[4], [1, 2, 1, 2]))
-    tiles.append(Tile(tile_images[5], [3, 2, 3, 2]))
-    tiles.append(Tile(tile_images[6], [3, 1, 2, 1]))
-    tiles.append(Tile(tile_images[7], [2, 2, 1, 2]))
-    tiles.append(Tile(tile_images[8], [2, 2, 2, 2]))
-    tiles.append(Tile(tile_images[9], [2, 2, 1, 1]))
-    tiles.append(Tile(tile_images[10], [1, 2, 1, 2]))
+    tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA']))
+    tiles.append(Tile(tile_images[1], ['BBB', 'BBB', 'BBB', 'BBB']))
+    tiles.append(Tile(tile_images[2], ['BBB', 'BCB', 'BBB', 'BBB']))
+    tiles.append(Tile(tile_images[3], ['BBB', 'BDB', 'BBB', 'BDB']))
+    tiles.append(Tile(tile_images[4], ['ABB', 'BCB', 'BBA', 'AAA']))
+    tiles.append(Tile(tile_images[5], ['ABB', 'BBB', 'BBB', 'BBA']))
+    tiles.append(Tile(tile_images[6], ['BBB', 'BCB', 'BBB', 'BCB']))
+    tiles.append(Tile(tile_images[7], ['BDB', 'BCB', 'BDB', 'BCB']))
+    tiles.append(Tile(tile_images[8], ['BDB', 'BBB', 'BCB', 'BBB']))
+    tiles.append(Tile(tile_images[9], ['BCB', 'BCB', 'BBB', 'BCB']))
+    tiles.append(Tile(tile_images[10], ['BCB', 'BCB', 'BCB', 'BCB']))
+    tiles.append(Tile(tile_images[11], ['BCB', 'BCB', 'BBB', 'BBB']))
+    tiles.append(Tile(tile_images[12], ['BBB', 'BCB', 'BBB', 'BCB']))
 
     # tiles.append(tiles[1].rotate(1))
     # tiles.append(tiles[1].rotate(2))
@@ -159,10 +161,7 @@ def main():
         tile = tiles[i]
         tile.analyze(tiles)
                  
-    # Create cell for each spot on the grid
-    grid = []
-    for i in range(DIM * DIM):
-        grid.append(Cell(len(tiles)))
+    make_grid(tiles)
 
     loop = True
     while loop:
