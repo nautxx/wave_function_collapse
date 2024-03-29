@@ -5,7 +5,7 @@ from cell import Cell
 
 # constants
 WIDTH, HEIGHT = 800, 800
-DIM = 4
+DIM = 2
 
 tiles = []
 tile_images = []
