@@ -5,7 +5,7 @@ from cell import Cell
 
 # constants
 WIDTH, HEIGHT = 800, 800
-DIM = 10
+DIM = 4
 
 tiles = []
 tile_images = []
@@ -25,12 +25,14 @@ def check_valid(arr, valid):
     # VALID: [BLANK, RIGHT]
     # ARR: [BLANK, UP, RIGHT, DOWN, LEFT]
     # result in removing UP, DOWN, LEFT
+    # print(arr, valid)
     i = len(arr) - 1
     while i >= 0:
         element = arr[i]
         if element not in valid:
             arr.pop(i)
         i -= 1
+    # print(arr)
 
 def make_grid():
     # Create cell for each spot on the grid
@@ -103,13 +105,14 @@ def draw(screen, tiles, grid):
                 next_grid.append(grid[index])
             else:
                 options = list(range(len(tiles)))  # List of options
+                # print(options)
                 # Look up
                 if j > 0:
                     up = grid[i + (j - 1) * DIM]
                     valid_options = []
                     for option in up.options:
                         valid = tiles[option].down
-                        valid_options.extend(valid)
+                        valid_options.append(valid)
                     check_valid(options, valid_options)
                 # Look right
                 if i < DIM - 1:
@@ -117,7 +120,7 @@ def draw(screen, tiles, grid):
                     valid_options = []
                     for option in right.options:
                         valid = tiles[option].left
-                        valid_options.extend(valid)
+                        valid_options.append(valid)
                     check_valid(options, valid_options)
                 # Look down
                 if j < DIM - 1:
@@ -125,7 +128,7 @@ def draw(screen, tiles, grid):
                     valid_options = []
                     for option in down.options:
                         valid = tiles[option].up
-                        valid_options.extend(valid)
+                        valid_options.append(valid)
                     check_valid(options, valid_options)
                 # Look left
                 if i > 0:
@@ -133,10 +136,11 @@ def draw(screen, tiles, grid):
                     valid_options = []
                     for option in left.options:
                         valid = tiles[option].right
-                        valid_options.extend(valid)
+                        valid_options.append(valid)
                     check_valid(options, valid_options)
 
                 next_grid.append(Cell(options))
+    
     grid = next_grid
 
 def main():
@@ -164,6 +168,7 @@ def main():
     # tiles.append(tiles[1].rotate(2))
     # tiles.append(tiles[1].rotate(3))
 
+    # create new tile duplicates from rotating and add to tiles list.
     initial_tile_count = len(tiles)
     for i in range(initial_tile_count):
         temp_tiles = []
