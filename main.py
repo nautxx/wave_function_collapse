@@ -217,6 +217,11 @@ def main():
     tiles.append(tiles[1].rotate(1))
     tiles.append(tiles[1].rotate(2))
     tiles.append(tiles[1].rotate(3))
+
+    # Generate the adjacency rules based on edges
+    for i in range(len(tiles)):
+        tile = tiles[i]
+        tile.analyze(tiles)
                  
     # Create cell for each spot on the grid
     grid = []
