@@ -7,6 +7,7 @@ from cell import Cell
 WIDTH, HEIGHT = 800, 800
 DIM = 8
 grid = []
+tiles = []
 
 def load_image(path):
     img = pygame.image.load(path).convert_alpha()
@@ -134,7 +135,6 @@ def main():
 
     tile_images = preload()
 
-    tiles = []
     tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA'], 0))
     tiles.append(Tile(tile_images[1], ['BBB', 'BBB', 'BBB', 'BBB'], 1))
     tiles.append(Tile(tile_images[2], ['BBB', 'BCB', 'BBB', 'BBB'], 2))
@@ -162,7 +162,7 @@ def main():
         tiles.extend(temp_tiles)
     print(len(tiles))
 
-    # Generate the adjacency rules based on edges
+    # generate the adjacency rules based on edges
     for i in range(len(tiles)):
         tile = tiles[i]
         tile.analyze(tiles)
