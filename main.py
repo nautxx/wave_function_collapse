@@ -14,9 +14,12 @@ def load_image(path, dim, padding=0):
 
 def preload():
     images = []
-    path = "./tiles/tetris"
-    images.append(load_image(f"{path}/blank.png", DIM))
-    images.append(load_image(f"{path}/up.png", DIM))
+    # path = "./tiles/tetris"
+    # images.append(load_image(f"{path}/blank.png", DIM))
+    # images.append(load_image(f"{path}/up.png", DIM))
+    path = "./tiles/circuit_coding_train"
+    for i in range(13):
+        images.append(load_image(f"{path}/{i}.png", DIM))
     return images
 
 def check_valid(arr, valid):
@@ -126,11 +129,30 @@ def main():
     tile_images = preload()
 
     tiles = []
-    tiles.append(Tile(tile_images[0], [0, 0, 0 ,0]))
-    tiles.append(Tile(tile_images[1], [1, 1, 0 ,1]))
-    tiles.append(tiles[1].rotate(1))
-    tiles.append(tiles[1].rotate(2))
-    tiles.append(tiles[1].rotate(3))
+    tiles.append(Tile(tile_images[0], [0, 0, 0, 0]))
+    tiles.append(Tile(tile_images[1], [1, 1, 1, 1]))
+    tiles.append(Tile(tile_images[2], [1, 2, 1, 1]))
+    tiles.append(Tile(tile_images[3], [1, 3, 1, 3]))
+    tiles.append(Tile(tile_images[4], [1, 2, 1, 2]))
+    tiles.append(Tile(tile_images[5], [3, 2, 3, 2]))
+    tiles.append(Tile(tile_images[6], [3, 1, 2, 1]))
+    tiles.append(Tile(tile_images[7], [2, 2, 1, 2]))
+    tiles.append(Tile(tile_images[8], [2, 2, 2, 2]))
+    tiles.append(Tile(tile_images[9], [2, 2, 1, 1]))
+    tiles.append(Tile(tile_images[10], [1, 2, 1, 2]))
+
+    # tiles.append(tiles[1].rotate(1))
+    # tiles.append(tiles[1].rotate(2))
+    # tiles.append(tiles[1].rotate(3))
+
+    # initial_tile_count = len(tiles)
+    # for i in range(initial_tile_count):
+    #     temp_tiles = []
+    #     for j in range(4):
+    #         temp_tiles.append(tiles[i].rotate(j))
+    #     temp_tiles = remove_duplicated_tiles(temp_tiles)  # Assuming this function is defined elsewhere
+    #     tiles.extend(temp_tiles)
+    # print(len(tiles))
 
     # Generate the adjacency rules based on edges
     for i in range(len(tiles)):
