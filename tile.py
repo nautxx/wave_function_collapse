@@ -4,6 +4,10 @@ class Tile:
     def __init__(self, img, edges):
         self.img = img
         self.edges = edges
+        self.up = []
+        self.right = []
+        self.down = []
+        self.left = []
 
     def rotate(self, num):
         w, h = self.img.get_size()
@@ -17,3 +21,20 @@ class Tile:
             new_edges.append(self.edges[(i - num + length) % length])
 
         return Tile(new_img, new_edges)
+    
+    def analyze(self, tiles):
+        for i in range(len(tiles)):
+            tile = tiles[i]
+
+            # UP
+            if tile.edges[2] == self.edges[0]:
+                self.up.append(tile)
+            # RIGHT
+            if tile.edges[3] == self.edges[1]:
+                self.right.append(tile)
+            # DOWN
+            if tile.edges[0] == self.edges[2]:
+                self.down.append(tile)
+            # LEFT
+            if tile.edges[1] == self.edges[3]:
+                self.left.append(tile)

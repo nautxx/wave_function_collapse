@@ -1,10 +1,61 @@
 import pygame
 import random
 from tile import Tile
+from cell import Cell
 
 # constants
 WIDTH, HEIGHT = 800, 800
 DIM = 20
+
+class Cell:
+    def __init__(self, value):
+        self.collapsed = False
+        
+        if isinstance(value, list):
+            self.options = value
+        else:
+            self.options = list(range(value))
+
+import pygame
+
+class Tile:
+    def __init__(self, img, edges):
+        self.img = img
+        self.edges = edges
+        self.up = []
+        self.right = []
+        self.down = []
+        self.left = []
+
+    def rotate(self, num):
+        w, h = self.img.get_size()
+        new_img = pygame.Surface((w, h), pygame.SRCALPHA)
+        new_img.blit(self.img, (0, 0))
+        new_img = pygame.transform.rotate(new_img, -90 * num)
+
+        new_edges = []
+        length = len(self.edges)
+        for i in range(length):
+            new_edges.append(self.edges[(i - num + length) % length])
+
+        return Tile(new_img, new_edges)
+    
+    def analyze(self, tiles):
+        for i in range(len(tiles)):
+            tile = tiles[i]
+
+            # UP
+            if tile.edges[2] == self.edges[0]:
+                self.up.append(tile)
+            # RIGHT
+            if tile.edges[3] == self.edges[1]:
+                self.right.append(tile)
+            # DOWN
+            if tile.edges[0] == self.edges[2]:
+                self.down.append(tile)
+            # LEFT
+            if tile.edges[1] == self.edges[3]:
+                self.left.append(tile)
 
 RULES = [
     [
@@ -45,11 +96,11 @@ def load_image(path, dim, padding=0):
     return img
 
 def preload():
-    tile_images = []
+    images = []
     path = "./tiles/tetris"
-    tile_images.append(load_image(f"{path}/blank.png", DIM))
-    tile_images.append(load_image(f"{path}/up.png", DIM))
-    return tile_images
+    images.append(load_image(f"{path}/blank.png", DIM))
+    images.append(load_image(f"{path}/up.png", DIM))
+    return images
 
 def check_valid(arr, valid):
     # VALID: [BLANK, RIGHT]
@@ -75,8 +126,8 @@ def draw(screen, tiles, grid):
     for j in range(DIM):
         for i in range(DIM):
             cell = grid[i + j * DIM]
-            if cell['collapsed']:
-                index = cell['options'][0]
+            if cell.collapsed:
+                index = cell.options[0]
                 img = tiles[index].img
                 scaled_img = pygame.transform.scale(img, (w, h)) # scale the img
                 screen.blit(scaled_img, (i * w, j * h))
@@ -84,28 +135,28 @@ def draw(screen, tiles, grid):
                 pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(i * w, j * h, w, h))
 
     # Pick cell with least entropy
-    grid_copy = [cell for cell in grid if not cell['collapsed']]
+    grid_copy = [cell for cell in grid if not cell.collapsed]
 
     if not grid_copy:
         return  # If there are no cells with options, exit the function
 
-    grid_copy.sort(key=lambda cell: len(cell['options']))
+    grid_copy.sort(key=lambda cell: len(cell.options))
 
     # Find the stop index
-    len_options = len(grid_copy[0]['options'])
-    stop_index = next((i for i, cell in enumerate(grid_copy) if len(cell['options']) > len_options), 0)
+    len_options = len(grid_copy[0].options)
+    stop_index = next((i for i, cell in enumerate(grid_copy) if len(cell.options) > len_options), 0)
 
     if stop_index > 0:
         grid_copy = grid_copy[:stop_index]
 
     if grid_copy:
         cell = random.choice(grid_copy)
-        cell['collapsed'] = True
-        pick = random.choice(cell['options'])
+        cell.collapsed = True
+        pick = random.choice(cell.options)
         if pick is None:
             start_over()
             return
-        cell['options'] = [pick]
+        cell.options = [pick]
 
     print(grid)
     print(grid_copy)
@@ -114,7 +165,7 @@ def draw(screen, tiles, grid):
     for j in range(DIM):
         for i in range(DIM):
             index = i + j * DIM
-            if grid[index]['collapsed']:
+            if grid[index].collapsed:
                 next_grid.append(grid[index])
             else:
                 options = list(range(len(tiles)))  # List of options
@@ -122,28 +173,28 @@ def draw(screen, tiles, grid):
                 if j > 0:
                     up = grid[i + (j - 1) * DIM]
                     valid_options = []
-                    for option in up['options']:
+                    for option in up.options:
                         valid_options.extend(RULES[3])
                     check_valid(options, valid_options)
                 # Look right
                 if i < DIM - 1:
                     right = grid[i + 1 + j * DIM]
                     valid_options = []
-                    for option in right['options']:
+                    for option in right.options:
                         valid_options.extend(RULES[4])
                     check_valid(options, valid_options)
                 # Look down
                 if j < DIM - 1:
                     down = grid[i + (j + 1) * DIM]
                     valid_options = []
-                    for option in down['options']:
+                    for option in down.options:
                         valid_options.extend(RULES[1])
                     check_valid(options, valid_options)
                 # Look left
                 if i > 0:
                     left = grid[i - 1 + j * DIM]
                     valid_options = []
-                    for option in left['options']:
+                    for option in left.options:
                         valid_options.extend(RULES[2])
                     check_valid(options, valid_options)
 
@@ -167,11 +218,10 @@ def main():
     tiles.append(tiles[1].rotate(2))
     tiles.append(tiles[1].rotate(3))
                  
-
-    grid = [{
-        'collapsed': False,
-        'options': [0, 1, 2, 3, 4]
-    } for _ in range(DIM * DIM)]
+    # Create cell for each spot on the grid
+    grid = []
+    for i in range(DIM * DIM):
+        grid.append(Cell(len(tiles)))
 
     loop = True
     while loop:
