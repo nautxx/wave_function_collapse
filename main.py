@@ -5,23 +5,19 @@ from cell import Cell
 
 # constants
 WIDTH, HEIGHT = 800, 800
-DIM = 8
+DIM = 10
 grid = []
 tiles = []
+tile_images = []
 
 def load_image(path):
     img = pygame.image.load(path).convert_alpha()
     return img
 
 def preload():
-    images = []
-    # path = "./tiles/tetris"
-    # images.append(load_image(f"{path}/blank.png", DIM))
-    # images.append(load_image(f"{path}/up.png", DIM))
-    path = "./tiles/circuit_coding_train"
+    path = "./tiles/circuit"
     for i in range(13):
-        images.append(load_image(f"{path}/{i}.png"))
-    return images
+        tile_images.append(load_image(f"{path}/{i}.png"))
 
 def check_valid(arr, valid):
     # VALID: [BLANK, RIGHT]
@@ -34,7 +30,7 @@ def check_valid(arr, valid):
             arr.pop(i)
         i -= 1
 
-def make_grid(tiles):
+def make_grid():
     # Create cell for each spot on the grid
     for i in range(DIM * DIM):
         grid.append(Cell(len(tiles)))
@@ -50,6 +46,7 @@ def draw(screen, tiles, grid):
     w = WIDTH / DIM
     h = HEIGHT / DIM
 
+    # draw the grid
     for j in range(DIM):
         for i in range(DIM):
             cell = grid[i + j * DIM]
@@ -59,9 +56,9 @@ def draw(screen, tiles, grid):
                 scaled_img = pygame.transform.scale(img, (w, h)) # scale the img
                 screen.blit(scaled_img, (i * w, j * h))
             else:
-                pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(i * w, j * h, w, h))
+                pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(i * w, j * h, w, h), 1)
 
-    # Pick cell with least entropy
+    # make a copy of the grid
     grid_copy = [cell for cell in grid if not cell.collapsed]
 
     if not grid_copy:
@@ -81,7 +78,7 @@ def draw(screen, tiles, grid):
         cell.collapsed = True
         pick = random.choice(cell.options)
         if pick == None:
-            make_grid(tiles)
+            make_grid()
             return
         cell.options = [pick]
 
@@ -133,7 +130,7 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
-    tile_images = preload()
+    preload()
 
     tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA'], 0))
     tiles.append(Tile(tile_images[1], ['BBB', 'BBB', 'BBB', 'BBB'], 1))
@@ -160,14 +157,14 @@ def main():
             temp_tiles.append(tiles[i].rotate(j))
         temp_tiles = remove_duplicated_tiles(temp_tiles)  # Assuming this function is defined elsewhere
         tiles.extend(temp_tiles)
-    print(len(tiles))
+    print(f"Amount of tiles: {len(tiles)}")
 
     # generate the adjacency rules based on edges
     for i in range(len(tiles)):
         tile = tiles[i]
         tile.analyze(tiles)
                  
-    make_grid(tiles)
+    make_grid()
 
     loop = True
     while loop:
