@@ -7,7 +7,7 @@ def compare_edge(a, b):
     return a == reverse_string(b)
 
 class Tile:
-    def __init__(self, img, edges):
+    def __init__(self, img, edges, i):
         self.img = img
         self.edges = edges
         self.up = []
@@ -15,22 +15,28 @@ class Tile:
         self.down = []
         self.left = []
 
+        if i != None:
+            self.index = i
+
     def rotate(self, num):
-        w, h = self.img.get_size()
+        w, h = self.img.get_width(), self.img.get_height(),
         new_img = pygame.Surface((w, h), pygame.SRCALPHA)
         new_img.blit(self.img, (0, 0))
-        new_img = pygame.transform.rotate(new_img, -90 * num)
+        new_img = pygame.transform.rotate(new_img, 90 * num)
 
         new_edges = []
         length = len(self.edges)
         for i in range(length):
             new_edges.append(self.edges[(i - num + length) % length])
-
-        return Tile(new_img, new_edges)
+        # print(new_edges)
+        return Tile(new_img, new_edges, self.index)
     
     def analyze(self, tiles):
         for i in range(len(tiles)):
             tile = tiles[i]
+
+            if (tile.index == 5 and self.index == 5):
+                continue
 
             # UP
             if compare_edge(tile.edges[2], self.edges[0]):
