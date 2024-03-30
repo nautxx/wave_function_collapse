@@ -6,3 +6,16 @@ Wave Function Collapse, also called reduction of state vector, is an algorithm f
 
 - [Wave Function Collapse Video Lesson](https://thecodingtrain.com/challenges/171-wave-function-collapse)
 - [Wave Function Collapse algorithm source](https://github.com/mxgmn/WaveFunctionCollapse)
+
+## Environment
+
+```shell
+pip install -r requirements.txt
+```
+## Run
+
+After following the setup instructions, run the program:
+
+```shell
+python3 main.py
+```
