@@ -187,7 +187,7 @@ def main():
             temp_tiles.append(tiles[i].rotate(j))
         temp_tiles = remove_duplicated_tiles(temp_tiles)  # Assuming this function is defined elsewhere
         tiles.extend(temp_tiles)
-    print(f"Total tiles: {len(tiles)}")
+    # print(f"Total tiles: {len(tiles)}")
 
     # generate the adjacency rules based on edges
     for i in range(len(tiles)):
