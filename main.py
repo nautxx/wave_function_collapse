@@ -15,11 +15,6 @@ def load_image(path):
     img = pygame.image.load(path).convert_alpha()
     return img
 
-def preload():
-    path = "./tiles/circuit"
-    for i in range(13):
-        tile_images.append(load_image(f"{path}/{i}.png"))
-
 def check_valid(arr, valid):
     """Check is any element in arr is valid."""
 
@@ -157,8 +152,12 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
+    pygame.display.set_caption("Wave Function Collapse")
 
-    preload()
+    # preload images
+    path = "./tiles/circuit"
+    for i in range(13):
+        tile_images.append(load_image(f"{path}/{i}.png"))
 
     # create and label the tiles
     tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA']))
