@@ -4,12 +4,11 @@ from tile import Tile
 from cell import Cell
 
 # constants
+DIM = 20
 WIDTH, HEIGHT = 800, 800
-DIM = 2
 
 tiles = []
 tile_images = []
-
 grid = []
 
 def load_image(path):
@@ -22,20 +21,22 @@ def preload():
         tile_images.append(load_image(f"{path}/{i}.png"))
 
 def check_valid(arr, valid):
+    """Check is any element in arr is valid."""
+
     # VALID: [BLANK, RIGHT]
     # ARR: [BLANK, UP, RIGHT, DOWN, LEFT]
     # result in removing UP, DOWN, LEFT
-    # print(arr, valid)
+
     i = len(arr) - 1
     while i >= 0:
         element = arr[i]
         if element not in valid:
             arr.pop(i)
         i -= 1
-    # print(arr)
 
 def make_grid():
-    # Create cell for each spot on the grid
+    """Create a cell for each spot on the grid"""
+
     for i in range(DIM * DIM):
         grid.append(Cell(len(tiles)))
 
@@ -47,8 +48,8 @@ def remove_duplicated_tiles(tiles):
     return list(unique_tiles_map.values())
 
 def draw(screen, tiles, grid):
-    w = WIDTH / DIM
-    h = HEIGHT / DIM
+    w = screen.get_width() / DIM
+    h = screen.get_height() / DIM
 
     # draw the grid
     for j in range(DIM):
@@ -56,22 +57,25 @@ def draw(screen, tiles, grid):
             cell = grid[i + j * DIM]
             if cell.collapsed:
                 index = cell.options[0]
-                img = tiles[index].img
-                scaled_img = pygame.transform.scale(img, (w, h)) # scale the img
+                image = tiles[index].img
+                scaled_img = pygame.transform.scale(image, (w, h)) # scale the img
                 screen.blit(scaled_img, (i * w, j * h))
             else:
+                # create blanks
                 pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(i * w, j * h, w, h), 1)
 
-    # make a copy of the grid and removed any collapsed cells
+    # make a copy of the grid and remove any collapsed cells
     grid_copy = [cell for cell in grid if not cell.collapsed]
+    # print(grid)
+    # print(grid_copy)
 
     # algorithm has completed if everything is collapsed
     if len(grid_copy) == 0:
         return
 
-    # pick a cell with least entropy
+    # pick a cell with the least entropy
     # sort by entropy
-    grid_copy.sort(key=lambda cell: len(cell.options))
+    grid_copy.sort(key=lambda x: len(x.options))
 
     # keep only the lowest entropy cells
     length = len(grid_copy[0].options)
@@ -104,69 +108,76 @@ def draw(screen, tiles, grid):
             if grid[index].collapsed:
                 next_grid.append(grid[index])
             else:
-                options = list(range(len(tiles)))  # List of options
+                options = list(range(len(tiles)))
                 # print(options)
-                # Look up
+
+                # look up
                 if j > 0:
                     up = grid[i + (j - 1) * DIM]
                     valid_options = []
                     for option in up.options:
                         valid = tiles[option].down
-                        valid_options.append(valid)
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
-                # Look right
+
+                # look right
                 if i < DIM - 1:
                     right = grid[i + 1 + j * DIM]
                     valid_options = []
                     for option in right.options:
                         valid = tiles[option].left
-                        valid_options.append(valid)
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
-                # Look down
+
+                # look down
                 if j < DIM - 1:
                     down = grid[i + (j + 1) * DIM]
                     valid_options = []
                     for option in down.options:
                         valid = tiles[option].up
-                        valid_options.append(valid)
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
-                # Look left
+
+                # look left
                 if i > 0:
                     left = grid[i - 1 + j * DIM]
                     valid_options = []
                     for option in left.options:
                         valid = tiles[option].right
-                        valid_options.append(valid)
+                        valid_options.extend(valid)
                     check_valid(options, valid_options)
 
                 next_grid.append(Cell(options))
     
-    grid = next_grid
+    # re-assign the grid value after cell evaluation
+    grid[:] = next_grid
 
 def main():
+    # initialize pygame
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
     preload()
 
-    tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA'], 0))
-    tiles.append(Tile(tile_images[1], ['BBB', 'BBB', 'BBB', 'BBB'], 1))
-    tiles.append(Tile(tile_images[2], ['BBB', 'BCB', 'BBB', 'BBB'], 2))
-    tiles.append(Tile(tile_images[3], ['BBB', 'BDB', 'BBB', 'BDB'], 3))
-    tiles.append(Tile(tile_images[4], ['ABB', 'BCB', 'BBA', 'AAA'], 4))
-    tiles.append(Tile(tile_images[5], ['ABB', 'BBB', 'BBB', 'BBA'], 5))
-    tiles.append(Tile(tile_images[6], ['BBB', 'BCB', 'BBB', 'BCB'], 6))
-    tiles.append(Tile(tile_images[7], ['BDB', 'BCB', 'BDB', 'BCB'], 7))
-    tiles.append(Tile(tile_images[8], ['BDB', 'BBB', 'BCB', 'BBB'], 8))
-    tiles.append(Tile(tile_images[9], ['BCB', 'BCB', 'BBB', 'BCB'], 9))
-    tiles.append(Tile(tile_images[10], ['BCB', 'BCB', 'BCB', 'BCB'], 10))
-    tiles.append(Tile(tile_images[11], ['BCB', 'BCB', 'BBB', 'BBB'], 11))
-    tiles.append(Tile(tile_images[12], ['BBB', 'BCB', 'BBB', 'BCB'], 12))
+    # create and label the tiles
+    tiles.append(Tile(tile_images[0], ['AAA', 'AAA', 'AAA', 'AAA']))
+    tiles.append(Tile(tile_images[1], ['BBB', 'BBB', 'BBB', 'BBB']))
+    tiles.append(Tile(tile_images[2], ['BBB', 'BCB', 'BBB', 'BBB']))
+    tiles.append(Tile(tile_images[3], ['BBB', 'BDB', 'BBB', 'BDB']))
+    tiles.append(Tile(tile_images[4], ['ABB', 'BCB', 'BBA', 'AAA']))
+    tiles.append(Tile(tile_images[5], ['ABB', 'BBB', 'BBB', 'BBA']))
+    tiles.append(Tile(tile_images[6], ['BBB', 'BCB', 'BBB', 'BCB']))
+    tiles.append(Tile(tile_images[7], ['BDB', 'BCB', 'BDB', 'BCB']))
+    tiles.append(Tile(tile_images[8], ['BDB', 'BBB', 'BCB', 'BBB']))
+    tiles.append(Tile(tile_images[9], ['BCB', 'BCB', 'BBB', 'BCB']))
+    tiles.append(Tile(tile_images[10], ['BCB', 'BCB', 'BCB', 'BCB']))
+    tiles.append(Tile(tile_images[11], ['BCB', 'BCB', 'BBB', 'BBB']))
+    tiles.append(Tile(tile_images[12], ['BBB', 'BCB', 'BBB', 'BCB']))
 
-    # tiles.append(tiles[1].rotate(1))
-    # tiles.append(tiles[1].rotate(2))
-    # tiles.append(tiles[1].rotate(3))
+    # assign indexes to Tile objects
+    for i in range(len(tiles)):
+        tiles[i].index = i
 
     # create new tile duplicates from rotating and add to tiles list.
     initial_tile_count = len(tiles)
@@ -182,9 +193,11 @@ def main():
     for i in range(len(tiles)):
         tile = tiles[i]
         tile.analyze(tiles)
+        # print(f"{i}: U{tile.up}, R{tile.right}, D{tile.down}, L{tile.left}")
                  
     make_grid()
 
+    # game loop
     loop = True
     while loop:
         # event handler
@@ -192,7 +205,7 @@ def main():
             if event.type == pygame.QUIT:
                 loop = False
 
-        # default background color
+        # set background color
         screen.fill((0, 0, 0))
 
         # draw elements on the screen
