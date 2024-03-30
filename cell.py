@@ -1,8 +1,8 @@
 class Cell:
-    def __init__(self, value):
+    def __init__(self, options):
         self.collapsed = False
         
-        if isinstance(value, list):
-            self.options = value
+        if isinstance(options, list):
+            self.options = options
         else:
-            self.options = list(range(value))
+            self.options = list(range(options))
