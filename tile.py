@@ -35,10 +35,11 @@ class Tile:
         return Tile(new_img, new_edges, self.index)
     
     def analyze(self, tiles):
-        """Set the rules for each tile"""
+        """Finds valid neighbors."""
+
         for i in range(len(tiles)):
             tile = tiles[i]
-            
+
             # tile 5 can't match itself
             if (tile.index == 5 and self.index == 5):
                 continue
