@@ -193,7 +193,7 @@ def main():
     for i in range(len(tiles)):
         tile = tiles[i]
         tile.analyze(tiles)
-        # print(f"{i}: U{tile.up}, R{tile.right}, D{tile.down}, L{tile.left}")
+        # print(f"{i}: u{tile.up}, r{tile.right}, d{tile.down}, l{tile.left}")
                  
     make_grid()
 
