@@ -47,7 +47,7 @@ def remove_duplicated_tiles(tiles):
         unique_tiles_map[key] = tile
     return list(unique_tiles_map.values())
 
-def draw(screen, tiles, grid):
+def draw(screen):
     w = screen.get_width() / DIM
     h = screen.get_height() / DIM
 
@@ -209,7 +209,7 @@ def main():
         screen.fill((0, 0, 0))
 
         # draw elements on the screen
-        draw(screen, tiles, grid)
+        draw(screen)
 
         # update the display
         pygame.display.flip()
