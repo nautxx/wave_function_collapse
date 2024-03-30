@@ -38,18 +38,22 @@ class Tile:
         """Set the rules for each tile"""
         for i in range(len(tiles)):
             tile = tiles[i]
+            
             # tile 5 can't match itself
             if (tile.index == 5 and self.index == 5):
                 continue
             # up
             if compare_edge(tile.edges[2], self.edges[0]):
                 self.up.append(i)
+
             # right
             if compare_edge(tile.edges[3], self.edges[1]):
                 self.right.append(i)
+
             # down
             if compare_edge(tile.edges[0], self.edges[2]):
                 self.down.append(i)
+
             # left
             if compare_edge(tile.edges[1], self.edges[3]):
                 self.left.append(i)
