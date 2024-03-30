@@ -4,7 +4,7 @@ from tile import Tile
 from cell import Cell
 
 # constants
-DIM = 20
+DIM = 40
 WIDTH, HEIGHT = 800, 800
 
 tiles = []
@@ -180,8 +180,7 @@ def main():
         tiles[i].index = i
 
     # create new tile duplicates from rotating and add to tiles list.
-    initial_tile_count = len(tiles)
-    for i in range(initial_tile_count):
+    for i in range(len(tiles)):
         temp_tiles = []
         for j in range(4):
             temp_tiles.append(tiles[i].rotate(j))
@@ -204,6 +203,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 loop = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    loop = False
 
         # set background color
         screen.fill((0, 0, 0))
